@@ -1,9 +1,71 @@
+// Built by: (Benjamin Lefebvre - 301234587)
+
+import { useEffect, useState } from "react";
 import "./styles/App.css";
+import axios from "axios";
 
 function App() {
+  const [options, setOptions] = useState({
+    DIVISION: [],
+    LOCATION_TYPE: [],
+    PREMISES_TYPE: [],
+    NEIGHBOURHOOD_158: [],
+  });
+
+  const [data, setData] = useState({
+    OCC_YEAR: "",
+    OCC_MONTH: "",
+    OCC_DOW: "",
+    DIVISION: "",
+    LOCATION_TYPE: "",
+    PREMISES_TYPE: "",
+    BIKE_COST: "",
+    NEIGHBOURHOOD_158: "",
+  });
+
   // Years from today to 20 years prior
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 21 }, (_, i) => currentYear - i);
+
+  useEffect(() => {
+    // Fetch options from API
+    axios.get("http://localhost:5000/options").then((response) => {
+      setOptions(response.data);
+      console.log(options);
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
+  function handleChange(
+    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  ) {
+    const { name, value } = e.target;
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    console.log(data);
+
+    // Validate the data
+    if (Object.values(data).some((value) => value === "")) {
+      alert("Please fill in all the fields");
+      return;
+    }
+
+    // Make a POST request to the API
+    axios.post("http://localhost:5000/predict", data).then((response) => {
+      console.log(response.data);
+    });
+
+    // Clear the form
+  }
 
   return (
     <>
@@ -14,10 +76,14 @@ function App() {
           <h2>Details about the stolen bike</h2>
           <form>
             {/* YEAR - OCC_YEAR */}
-            <label htmlFor='year'>What year was the bike was stolen?</label>
-            <select name='year' id='year'>
+            <label htmlFor='OCC_YEAR'>What year was the bike was stolen?</label>
+            <select
+              name='OCC_YEAR'
+              id='OCC_YEAR'
+              value={data.OCC_YEAR}
+              onChange={handleChange}
+            >
               <option value=''>Select Year</option>
-              {/* List Options from current year to 20 years prior */}
               {years.map((year) => (
                 <option key={year} value={year}>
                   {year}
@@ -26,8 +92,15 @@ function App() {
             </select>
 
             {/* MONTH - OCC_MONTH */}
-            <label htmlFor='month'>What month was the bike was stolen?</label>
-            <select name='month' id='month'>
+            <label htmlFor='OCC_MONTH'>
+              What month was the bike was stolen?
+            </label>
+            <select
+              name='OCC_MONTH'
+              id='OCC_MONTH'
+              value={data.OCC_MONTH}
+              onChange={handleChange}
+            >
               <option value=''>Select Month</option>
               <option value='January'>January</option>
               <option value='February'>February</option>
@@ -44,10 +117,15 @@ function App() {
             </select>
 
             {/* DAY OF THE WEEK - OCC_DOW */}
-            <label htmlFor='day'>
+            <label htmlFor='OCC_DOW'>
               What day of the week was the bike was stolen?
             </label>
-            <select name='day' id='day'>
+            <select
+              name='OCC_DOW'
+              id='OCC_DOW'
+              value={data.OCC_DOW}
+              onChange={handleChange}
+            >
               <option value=''>Select Day</option>
               <option value='Sunday'>Sunday</option>
               <option value='Monday'>Monday</option>
@@ -59,48 +137,86 @@ function App() {
             </select>
 
             {/* Police Division - DIVISION */}
-            <label htmlFor='division'>
+            <label htmlFor='DIVISION'>
               Which police division is in charge of the case?
             </label>
-            <select name='division' id='division'>
+            <select
+              name='DIVISION'
+              id='DIVISION'
+              value={data.DIVISION}
+              onChange={handleChange}
+            >
               <option value=''>Select Division</option>
-              {/* Display list from API */}
+              {options.DIVISION.map((division) => (
+                <option key={division} value={division}>
+                  {division}
+                </option>
+              ))}
             </select>
 
             {/* Location Type - LOCATION_TYPE */}
-            <label htmlFor='location_type'>
+            <label htmlFor='LOCATION_TYPE'>
               What location type describe the best the last place your bike was
               seen?
             </label>
-            <select name='location_type' id='location_type'>
+            <select
+              name='LOCATION_TYPE'
+              id='LOCATION_TYPE'
+              value={data.LOCATION_TYPE}
+              onChange={handleChange}
+            >
               <option value=''>Select Location Type</option>
-              {/* Display list from API */}
+              {options.LOCATION_TYPE.map((locationType) => (
+                <option key={locationType} value={locationType}>
+                  {locationType}
+                </option>
+              ))}
             </select>
 
             {/* Premises type - PREMISES_TYPE */}
-            <label htmlFor='premises_type'>What premises type was it?</label>
-            <select name='premises_type' id='premises_type'>
+            <label htmlFor='PREMISES_TYPE'>What premises type was it?</label>
+            <select
+              name='PREMISES_TYPE'
+              id='PREMISES_TYPE'
+              value={data.PREMISES_TYPE}
+              onChange={handleChange}
+            >
               <option value=''>Select Premises Type</option>
-              {/* Display list from API */}
+              {options.PREMISES_TYPE.map((premisesType) => (
+                <option key={premisesType} value={premisesType}>
+                  {premisesType}
+                </option>
+              ))}
             </select>
 
             {/* Bike Cost - BIKE_COST */}
-            <label htmlFor='bike_cost'>How much is the bike cost?</label>
+            <label htmlFor='BIKE_COST'>How much is the bike cost?</label>
             <input
               type='number'
-              name='bike_cost'
-              id='bike_cost'
+              name='BIKE_COST'
+              id='BIKE_COST'
               min={0}
               max={100000}
+              value={data.BIKE_COST}
+              onChange={handleChange}
             />
 
             {/* Neiboorhood - NEIGHBOURHOOD_158 */}
-            <label htmlFor='neighbourhood'>
+            <label htmlFor='NEIGHBOURHOOD_158'>
               What neiboorhood was it stolen from?
             </label>
-            <select name='neighbourhood' id='neighbourhood'>
+            <select
+              name='NEIGHBOURHOOD_158'
+              id='NEIGHBOURHOOD_158'
+              value={data.NEIGHBOURHOOD_158}
+              onChange={handleChange}
+            >
               <option value=''>Select Neighbourhood</option>
-              {/* Display list from API */}
+              {options.NEIGHBOURHOOD_158.map((neighbourhood) => (
+                <option key={neighbourhood} value={neighbourhood}>
+                  {neighbourhood}
+                </option>
+              ))}
             </select>
 
             <button type='submit'>Predict</button>
