@@ -23,6 +23,8 @@ function App() {
     NEIGHBOURHOOD_158: "",
   });
 
+  const [prediction, setPrediction] = useState("");
+
   // Years from today to 20 years prior
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 21 }, (_, i) => currentYear - i);
@@ -62,6 +64,7 @@ function App() {
     // Make a POST request to the API
     axios.post("http://localhost:5000/predict", data).then((response) => {
       console.log(response.data);
+      setPrediction(response.data.prediction);
     });
 
     // Clear the form
@@ -226,6 +229,8 @@ function App() {
         <div className='prediction-results tile'>
           <h2>Outcome Predictions</h2>
           <p>Is your bike likely to be returned or not?</p>
+          {/* Your bike is likely to be (stolen or returned) */}
+          {prediction && <p>Your bike is likely to be {prediction}</p>}
         </div>
       </div>
     </>
