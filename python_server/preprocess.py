@@ -16,6 +16,7 @@ directory = os.path.dirname(directory)
 DATA_PATH = os.path.join(directory, 'python_server/Bicycle_Thefts_Open_Data.csv')
 MODEL_DIR = os.path.join(directory, 'python_server/models/')
 FILE_PATH = os.path.join(directory, 'python_server/preprocessed_bike_data.csv')
+FILE_PATH_FILTERED = os.path.join(directory, 'python_server/filtered_bike_data.csv')
 
 print(DATA_PATH)
 print(MODEL_DIR)
@@ -50,8 +51,13 @@ def encode_categorical_features(df):
     categorical_columns = df.select_dtypes(include=['object']).columns
     ord_enc = OrdinalEncoder()
 
-    for col in categorical_columns:
-        df[col] = ord_enc.fit_transform(df[[col]].astype(str))
+    df[categorical_columns] = ord_enc.fit_transform(df[categorical_columns].astype(str))
+
+    print()
+    print("Encoded categorical features using OrdinalEncoder.")
+    print(f"Encoded columns: {categorical_columns}")
+    print(f"DATA: {df.head()}")
+    print()
 
     # Save the encoder for future use
     with open(f'{MODEL_DIR}encoder.pkl', 'wb') as f:
@@ -97,6 +103,8 @@ def preprocess_df(df):
     df['STATUS'] = df['STATUS'].map(status_mapping)
     print("Mapped STATUS column to numeric labels.")
 
+    save_preprocessed_data(df, file_path=FILE_PATH_FILTERED)
+
     # Encode categorical features
     df = encode_categorical_features(df)
 
@@ -111,9 +119,6 @@ def save_preprocessed_data(df, file_path=FILE_PATH):
     """Save the preprocessed dataset to a CSV file."""
     df.to_csv(file_path, index=False)
     print(f"Preprocessed data saved to {file_path}.")
-    print(preprocessed_data.info())
-    print(preprocessed_data.select_dtypes(include=['object']).columns)
-
 
 if __name__ == '__main__':
     # Load the dataset

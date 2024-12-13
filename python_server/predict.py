@@ -1,37 +1,36 @@
-import pickle
 import pandas as pd
-from preprocess import encode_categorical_features, scale_numerical_features 
+import pickle
 
 def predict_status(JSONdata): 
     # Get the input data (JSON)
     print("Predicting...")
     print(JSONdata)
 
-    # load model
+    # Load model
     with open('../models/RandomForestClassifier.pkl', 'rb') as f:
         model = pickle.load(f)
 
-        # Preprocess the input data
-        # Convert JSON to DataFrame
-        df = pd.DataFrame([JSONdata])
-        print(df)
+    # Preprocess the input data
+    # Convert JSON to DataFrame
+    df = pd.DataFrame([JSONdata])
+    print(df)
 
-        # Encode categorical features
-        df = encode_categorical_features(df)
+    # Encode categorical features
+    with open('../python_server/models/encoder.pkl', 'rb') as f:
+        encoder = pickle.load(f)
 
-        # Scale numerical features
-        df = scale_numerical_features(df)
+    categorical_columns = df.select_dtypes(include=['object']).columns
 
-        # Make a prediction
-        prediction = model.predict(df)
-        print("Prediction: " + str(prediction))
+    # remove OCC_YEAR and BIKE_COST columns from the list of categorical columns
+    categorical_columns = categorical_columns.drop(['OCC_YEAR', 'BIKE_COST'], errors='ignore')
 
-        return prediction[0]
-    
-    # # Make a prediction
-    # prediction = model.predict([features])
-    # print(prediction)
-    # # Return the prediction
-    # response = jsonify({'status': prediction[0]})
-    # response.headers.add("Access-Control-Allow-Origin", "*")
-    # return response
+    # Use transform instead of fit_transform
+    df[categorical_columns] = encoder.transform(df[categorical_columns].astype(str))
+
+    print(df.head())
+
+    # Make a prediction
+    prediction = model.predict(df)
+    print("Prediction: " + str(prediction))
+
+    return prediction[0]

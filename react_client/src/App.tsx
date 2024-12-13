@@ -69,17 +69,17 @@ function App() {
     });
 
     // Clear the form
-    setData({
-      OCC_YEAR: "",
-      OCC_MONTH: "",
-      OCC_DOW: "",
-      DIVISION: "",
-      LOCATION_TYPE: "",
-      PREMISES_TYPE: "",
-      BIKE_TYPE: "",
-      BIKE_COST: "",
-      NEIGHBOURHOOD_158: "",
-    });
+    // setData({
+    //   OCC_YEAR: "",
+    //   OCC_MONTH: "",
+    //   OCC_DOW: "",
+    //   DIVISION: "",
+    //   LOCATION_TYPE: "",
+    //   PREMISES_TYPE: "",
+    //   BIKE_TYPE: "",
+    //   BIKE_COST: "",
+    //   NEIGHBOURHOOD_158: "",
+    // });
   }
 
   return (

@@ -10,7 +10,7 @@ app.config["CORS_HEADERS"] = "Content-Type"
 import os
 
 directory = os.getcwd()
-file_path = os.path.join(directory, '../python_server/Bicycle_Thefts_Open_Data.csv')
+file_path = os.path.join(directory, '../python_server/filtered_bike_data.csv')
 bike_data = pd.read_csv(file_path)
 
 # API Routes
