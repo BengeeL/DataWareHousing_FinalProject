@@ -1,8 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
-from preprocess import preprocessed_data
-from predict import predict_dict
+from predict import predict_status
 
 app = Flask(__name__)
 CORS(app)
@@ -11,7 +10,7 @@ app.config["CORS_HEADERS"] = "Content-Type"
 import os
 
 directory = os.getcwd()
-file_path = os.path.join(directory, 'python_server/Bicycle_Thefts_Open_Data.csv')
+file_path = os.path.join(directory, '../python_server/Bicycle_Thefts_Open_Data.csv')
 bike_data = pd.read_csv(file_path)
 
 # API Routes
@@ -38,12 +37,19 @@ def predict():
     data = request.get_json()
     print(data)
 
-    # 
+    prediction = predict_status(data)
 
-    # Use model to predict outcome
-    prediction = predict_dict(data)
+    status = ''
+    if prediction == 1:
+        status = 'RECOVERED'
+    else:
+        status = 'STOLEN'
+    
+    # Make a prediction
+    return jsonify({'status': status})
 
-    return jsonify({'prediction': prediction}) 
+
+
     
 # Run the app
 if __name__ == '__main__':

@@ -5,8 +5,21 @@ from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 
 # Constants
 TARGET = 'STATUS'
-DATA_PATH = 'python_server/Bicycle_Thefts_Open_Data.csv'  
-MODEL_DIR = 'python_server/models/'
+
+import os
+
+directory = os.getcwd()
+
+# move one directory up
+directory = os.path.dirname(directory)
+
+DATA_PATH = os.path.join(directory, 'python_server/Bicycle_Thefts_Open_Data.csv')
+MODEL_DIR = os.path.join(directory, 'python_server/models/')
+FILE_PATH = os.path.join(directory, 'python_server/preprocessed_bike_data.csv')
+
+print(DATA_PATH)
+print(MODEL_DIR)
+
 # Display all columns
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
@@ -94,7 +107,7 @@ def preprocess_df(df):
     return df
 
 
-def save_preprocessed_data(df, file_path='python_server/preprocessed_bike_data.csv'):
+def save_preprocessed_data(df, file_path=FILE_PATH):
     """Save the preprocessed dataset to a CSV file."""
     df.to_csv(file_path, index=False)
     print(f"Preprocessed data saved to {file_path}.")

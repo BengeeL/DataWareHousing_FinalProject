@@ -10,6 +10,7 @@ function App() {
     LOCATION_TYPE: [],
     PREMISES_TYPE: [],
     NEIGHBOURHOOD_158: [],
+    BIKE_TYPE: [],
   });
 
   const [data, setData] = useState({
@@ -19,6 +20,7 @@ function App() {
     DIVISION: "",
     LOCATION_TYPE: "",
     PREMISES_TYPE: "",
+    BIKE_TYPE: "",
     BIKE_COST: "",
     NEIGHBOURHOOD_158: "",
   });
@@ -31,7 +33,7 @@ function App() {
 
   useEffect(() => {
     // Fetch options from API
-    axios.get("http://localhost:5000/options").then((response) => {
+    axios.get("http://127.0.0.1:5000/options").then((response) => {
       setOptions(response.data);
       console.log(options);
     });
@@ -62,12 +64,22 @@ function App() {
     }
 
     // Make a POST request to the API
-    axios.post("http://localhost:5000/predict", data).then((response) => {
-      console.log(response.data);
-      setPrediction(response.data.prediction);
+    axios.post("http://127.0.0.1:5000/predict", data).then((response) => {
+      setPrediction(response.data.status);
     });
 
     // Clear the form
+    setData({
+      OCC_YEAR: "",
+      OCC_MONTH: "",
+      OCC_DOW: "",
+      DIVISION: "",
+      LOCATION_TYPE: "",
+      PREMISES_TYPE: "",
+      BIKE_TYPE: "",
+      BIKE_COST: "",
+      NEIGHBOURHOOD_158: "",
+    });
   }
 
   return (
@@ -77,7 +89,7 @@ function App() {
       <div className='dashboard'>
         <div className='input-form tile'>
           <h2>Details about the stolen bike</h2>
-          <form>
+          <form onSubmit={handleSubmit}>
             {/* YEAR - OCC_YEAR */}
             <label htmlFor='OCC_YEAR'>What year was the bike was stolen?</label>
             <select
@@ -188,6 +200,22 @@ function App() {
               {options.PREMISES_TYPE.map((premisesType) => (
                 <option key={premisesType} value={premisesType}>
                   {premisesType}
+                </option>
+              ))}
+            </select>
+
+            {/* Bike Type - BIKE_TYPE */}
+            <label htmlFor='BIKE_TYPE'>What type of bike was it?</label>
+            <select
+              name='BIKE_TYPE'
+              id='BIKE_TYPE'
+              value={data.BIKE_TYPE}
+              onChange={handleChange}
+            >
+              <option value=''>Select Bike Type</option>
+              {options.BIKE_TYPE.map((bikeType) => (
+                <option key={bikeType} value={bikeType}>
+                  {bikeType}
                 </option>
               ))}
             </select>
