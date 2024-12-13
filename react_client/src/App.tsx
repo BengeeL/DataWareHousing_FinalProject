@@ -35,6 +35,7 @@ function App() {
       setOptions(response.data);
       console.log(options);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -77,7 +78,7 @@ function App() {
       <div className='dashboard'>
         <div className='input-form tile'>
           <h2>Details about the stolen bike</h2>
-          <form>
+          <form onSubmit={handleSubmit}>
             {/* YEAR - OCC_YEAR */}
             <label htmlFor='OCC_YEAR'>What year was the bike was stolen?</label>
             <select
