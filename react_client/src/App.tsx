@@ -10,6 +10,7 @@ function App() {
     LOCATION_TYPE: [],
     PREMISES_TYPE: [],
     NEIGHBOURHOOD_158: [],
+    BIKE_TYPE: [],
   });
 
   const [data, setData] = useState({
@@ -19,6 +20,7 @@ function App() {
     DIVISION: "",
     LOCATION_TYPE: "",
     PREMISES_TYPE: "",
+    BIKE_TYPE: "",
     BIKE_COST: "",
     NEIGHBOURHOOD_158: "",
   });
@@ -31,11 +33,21 @@ function App() {
 
   useEffect(() => {
     // Fetch options from API
-    axios.get("http://localhost:5000/options").then((response) => {
-      setOptions(response.data);
-      console.log(options);
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    axios
+      .get("http://127.0.0.1:5000/options", {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": true,
+        },
+      })
+      .then((response) => {
+        setOptions(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the options:", error);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -63,7 +75,7 @@ function App() {
     }
 
     // Make a POST request to the API
-    axios.post("http://localhost:5000/predict", data).then((response) => {
+    axios.post("http://127.0.0.1:5000/predict", data).then((response) => {
       console.log(response.data);
       setPrediction(response.data.prediction);
     });
@@ -219,6 +231,22 @@ function App() {
               {options.NEIGHBOURHOOD_158.map((neighbourhood) => (
                 <option key={neighbourhood} value={neighbourhood}>
                   {neighbourhood}
+                </option>
+              ))}
+            </select>
+
+            {/* Bike Type - BIKE_TYPE */}
+            <label htmlFor='BIKE_TYPE'>What type of bike was it?</label>
+            <select
+              name='BIKE_TYPE'
+              id='BIKE_TYPE'
+              value={data.BIKE_TYPE}
+              onChange={handleChange}
+            >
+              <option value=''>Select Bike Type</option>
+              {options.BIKE_TYPE.map((bikeType) => (
+                <option key={bikeType} value={bikeType}>
+                  {bikeType}
                 </option>
               ))}
             </select>

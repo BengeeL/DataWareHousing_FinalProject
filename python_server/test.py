@@ -123,7 +123,6 @@ print("Unique values in 'STATUS':", scaled_bike_dataf['STATUS'].unique())
 #                   MODEL TRAINING
 # ---------------------------------------------------------
 
-from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import RandomUnderSampler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -157,32 +156,23 @@ print("ROC AUC Score:", roc_auc_score(y_test, model_under.predict_proba(X_test)[
 
 
 
-from flask import Flask, request, jsonify, make_response
-from flask_cors import CORS, cross_origin
-import pickle
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 app = Flask(__name__)
-app.config['CORS_HEADERS'] = 'Content-Type'
-# CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})  # Enable CORS for specific origin
-CORS(app, origins=["http://localhost:5173"])  # Enable CORS for all origins
-
-def _build_cors_preflight_response():
-    response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "*")
-    response.headers.add("Access-Control-Allow-Methods", "*")
-    return response
+CORS(app)
+app.config["CORS_HEADERS"] = "Content-Type"
 
 # API Routes
 # Get options of the location names in the dataset ,the bike_type,the bike cost ,premises, neighbourhood
 @app.route('/options', methods=['GET'])
-@cross_origin()
 def get_options():
     options = {
         'DIVISION': bike_data['DIVISION'].unique().tolist(),
         'LOCATION_TYPE': bike_data['LOCATION_TYPE'].unique().tolist(),
         'PREMISES_TYPE': bike_data['PREMISES_TYPE'].unique().tolist(),
         'NEIGHBOURHOOD_158': bike_data['NEIGHBOURHOOD_158'].unique().tolist(),
+        'BIKE_TYPE': bike_data['BIKE_TYPE'].unique().tolist(),
     }
     response = jsonify(options)
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -192,19 +182,22 @@ def get_options():
 @app.route('/predict', methods=['POST'])
 def predict():
     print("Predicting")
-    # data = request.get_json()
-    
-    # # Convert the input data into a DataFrame
-    # input_data = pd.DataFrame(data, index=[0])
-    
-    # # Preprocess the input data
-    # input_data = preprocessor.preprocess(input_data)
-    
-    # # Make predictions
-    # prediction = modeler.best_model.predict(input_data)
-    
-    # return jsonify({'prediction': prediction[0]})
 
+    # Get the input data
+    data = request.get_json()
+    print(data)
+
+    # Convert the input data into a DataFrame
+    input_data = pd.DataFrame(data, index=[0])
+
+    # Preprocess the input data
+    input_data = preprocessor.preprocess(input_data)
+
+    # Make predictions
+    prediction = model_under.predict(input_data)
+
+    return jsonify({'prediction': prediction[0]})
+    
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
